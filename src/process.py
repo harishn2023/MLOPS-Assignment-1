@@ -1,6 +1,7 @@
 import pandas as pd
 import urllib.request
 from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler as skStandardScaler
 
 def preprocess_data():
     # URL of the dataset
@@ -26,6 +27,10 @@ def preprocess_data():
         le = LabelEncoder()
         data[column] = le.fit_transform(data[column])
 
+    scaler = skStandardScaler()
+    numeric_cols = data.select_dtypes(include=['int64', 'float64'])
+    numeric_cols = numeric_cols.columns.difference(['income'])
+    data[numeric_cols] = scaler.fit_transform(data[numeric_cols])
     data.to_csv("data/processed_data.csv")
 
 if __name__ == '__main__':
