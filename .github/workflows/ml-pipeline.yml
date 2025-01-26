@@ -1,0 +1,42 @@
+name: UCI adult dataset 
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout to latest version on the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python virtual environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Preprocessing data
+        run: python src/process.py
+
+      - name: Train the model with the training data
+        run: python src/train.py
+
+      - name: Evaluate the model with the test data
+        run: python src/evaluate.py
+
+      - name: Store trained model
+        uses: actions/upload-artifact@v4
+        with:
+          name: trained-model
+          path: models/
